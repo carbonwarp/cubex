@@ -1,0 +1,25 @@
+Cubex: The subsystem technology that integrates with system security
+
+Usage:
+  cx, cubex [options] [command]
+
+Available Commands:
+  search <url>				Search for an image using url (eg: docker.io/library/node)
+  pull <url> 				Pull an image and register it
+  create <image id> <subsystem name>	Create a cubex subsystem. 
+  					Requires passing image id followed by subsystem name.
+  					Same image id may be shared, but subsystem name must not.
+  r, run				Run / use a cubex subsystem
+  l, list				List all cubex subsystems
+  l r, ist registry			List all images from cubex local registry
+  rm, remove <subsystem id>		Remove a cubex subsystem (N/A)
+  rm i, remove image <image id>		Remove an image found in cubex local registry (N/A)
+  repair (pre-alpha)			repair if anything's wrong
+  cn, clean				clean all data cubex stored locally.
+  					It does not remove cubex itself.
+  					the images of podman and buildah stay unaffected.
+  
+Available Options:
+  -v, --version	Show cubex version
+  -h, --help	Show cubex help page
+  

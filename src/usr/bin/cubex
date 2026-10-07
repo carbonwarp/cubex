@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+# Increase this count  as 1 is to an hour.
+# Time spent debugging because of letting AI refactor :0.4
+
+
+# All variables except the throwaway has to be either written here or reference in comments
+var(){	
+	export self="$(readlink -f "${BASH_SOURCE[0]}")"
+	export prefix="$(dirname "$(dirname "$self")")"
+	export libdir="$prefix"/lib/cubex
+
+	export sharedir=""$prefix"/share/cubex"
+	export ci="${0##*/}"
+	export storage="$HOME"/.local/share/cubex
+
+	export registrypath=$"$storage"/registry
+	export registryindex=$"$storage"/registry.json
+
+
+	export subsystempath="$storage"/subsystem
+	export subsystemindex="$storage"/subsystem.json
+
+	# imageid and rootfspath are in pull.sh
+}
+
+# Initialize and prepare cubex paths and files
+init() {
+	# clean tmp files
+	rm -f ${registryindex}.tmp.*
+	rm -f ${subsystemindex}.tmp.*
+	
+	
+	# Registry
+	mkdir -p "$registrypath"
+	if [[ ! -s "$registryindex" ]]; then
+	    	printf '{}\n' > "$registryindex"
+	fi
+
+	# Subsystems
+	mkdir -p "$subsystempath"
+	if [[ ! -s "$subsystemindex" ]]; then
+	    	printf '{}\n' > "$subsystemindex"
+	fi
+}
+
+checkcmd() {
+	# if no input provided
+	if (( $# == 0 )); then
+		cat "$sharedir/help.txt"
+		exit 0 
+	fi
+
+    case "${!#}" in
+        -h|--help|help)
+            cat "$sharedir/help.txt"
+            return
+            ;;
+
+        -v|--version|version)
+            printf 'cubex version '
+            cat "$sharedir/version.txt"
+            return
+            ;;
+    esac
+
+    case "$1" in
+        search|s)
+            echo "searching..."
+            bash "$libdir/commands/search.sh" "${@:2:1}"
+            ;;
+
+        pull|p)
+            echo "pulling"
+            bash "$libdir/commands/pull.sh" "${@:2:1}"
+            ;;
+
+        create|c)
+            bash "$libdir/commands/subsystem/create.sh" "${@:2:2}"
+            ;;
+
+        run|r)
+            bash "$libdir/commands/subsystem/run.sh" "${@:2:1}"
+            ;;
+
+        clean|cn)
+            case "${2-}" in
+                subsystem|s)
+                	bash "$libdir/commands/subsystem/clean.sh"
+                    ;;
+                *)
+                	bash "$libdir/commands/clean.sh"
+                    ;;
+
+            esac
+            ;;
+
+        list|l)
+            case "${2-}" in
+                registry|r)
+                   	 bash "$libdir/commands/registry/list.sh"
+                    ;;
+                *)
+                    	bash "$libdir/commands/subsystem/list.sh" 
+                    ;;
+
+            esac
+            ;;
+
+        *)
+            echo "Error: unrecognized command \"${ci} ${*}\"" >&2
+            echo "Please refer cubex --help" >&2
+            return 127
+            ;;
+    esac
+}
+
+var
+init
+checkcmd "$@"

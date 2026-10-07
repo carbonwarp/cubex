@@ -1,0 +1,26 @@
+name: cubex
+arch: all
+platform: linux
+version: ${VERSION}
+maintainer: Carbonwarp
+homepage: https://carbonwarp.com
+description: create subsystems that integrate natively with the host system's LSMs using OCI-images.
+license: GPL-2.0-only OR BSD-2-Clause
+
+depends:
+  - bash
+  - podman
+
+contents:
+  - src: src/usr/
+    dst: /usr/
+    type: tree
+
+rpm:
+  buildhost: reproducible
+  signature:
+    key_file: private.asc
+
+deb:
+  signature:
+    key_file: private.asc

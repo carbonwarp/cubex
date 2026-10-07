@@ -1,0 +1,66 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install nfpm
+        run: |
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Set version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $GITHUB_REF_NAME"
+            exit 1
+          fi
+
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Import signing keys
+        env:
+          PRIVATE_SIGNING_KEY: ${{ secrets.PRIVATE_SIGNING_KEY }}
+          PUBLIC_SIGNING_KEY: ${{ secrets.PUBLIC_SIGNING_KEY }}
+        run: |
+          umask 077
+          printf '%s\n' "$PRIVATE_SIGNING_KEY" > private.asc
+          printf '%s\n' "$PUBLIC_SIGNING_KEY" > public.asc
+          chmod 644 public.asc
+
+      - name: Build packages
+        env:
+          NFPM_PASSPHRASE: ${{ secrets.NFPM_PASSPHRASE }}
+        run: make VERSION="$VERSION"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/* \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
+
+      - name: Remove signing keys
+        if: always()
+        run: rm -f private.asc public.asc
