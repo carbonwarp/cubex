@@ -58,14 +58,14 @@ init(){
     mkdir -p "$dir/upper"/{dev,proc,sys,root,tmp/.X11-unix} "$dir/upper$xrd"
 
     # mount and enter if not running
-    unshare --map-auto --map-root-user --mount sh -c '
+    unshare --user --map-auto --map-root-user --mount --pid --fork --mount-proc --uts --ipc sh -c '
       lower=$1; dir=$2; xrd=$3; host_home=$4; ps1=$5
       merged=$dir/merged
 
       setup() {
         fuse-overlayfs -o "lowerdir=$lower,upperdir=$dir/upper,workdir=$dir/work" "$merged" || return 1
         mount --rbind /dev  "$merged/dev"  || return 1
-        mount --rbind /proc "$merged/proc" || return 1
+        mount -t proc proc "$merged/proc"  || return 1
         mount --rbind /sys  "$merged/sys"  || return 1
         mount --bind "$host_home" "$merged/root" || return 1
         chmod 1777 "$merged/tmp"
