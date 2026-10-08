@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -15,6 +19,37 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version and release type
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+(\.[0-9A-Za-z]+)*)?$ ]]; then
+            echo "Invalid release tag: $GITHUB_REF_NAME (expected vX.Y.Z or vX.Y.Z-name)"
+            exit 1
+          fi
+
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE="true"
+          else
+            PRERELEASE="false"
+            git fetch origin main
+            if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+              echo "Stable tag $GITHUB_REF_NAME must point to a commit on main."
+              echo "Use vX.Y.Z-name for branch builds."
+              exit 1
+            fi
+          fi
+
+          BRANCHES="$(git branch -r --contains "$GITHUB_SHA" | sed 's/^ *origin\///; /HEAD/d' | paste -sd, - | sed 's/,/, /g')"
+
+          {
+            echo "VERSION=$VERSION"
+            echo "PRERELEASE=$PRERELEASE"
+            echo "BRANCHES=${BRANCHES:-none}"
+          } >> "$GITHUB_ENV"
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -26,16 +61,10 @@ jobs:
           go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
-      - name: Set version
+      - name: Write version file
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid release tag: $GITHUB_REF_NAME"
-            exit 1
-          fi
-
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          mkdir -p src/usr/share/cubex
+          printf '%s\n' "$VERSION" > src/usr/share/cubex/version.txt
 
       - name: Import signing keys
         env:
@@ -52,14 +81,38 @@ jobs:
           NFPM_PASSPHRASE: ${{ secrets.NFPM_PASSPHRASE }}
         run: make VERSION="$VERSION"
 
-      - name: Create GitHub Release
+      - name: Add stable asset names
+        if: env.PRERELEASE == 'false'
+        run: |
+          for ext in rpm deb pkg.tar.zst; do
+            files=(dist/*."$ext")
+            if [[ ${#files[@]} -ne 1 || ! -e "${files[0]}" ]]; then
+              echo "Expected exactly one .$ext file in dist/, found: ${files[*]}"
+              exit 1
+            fi
+            if [[ "${files[0]}" != "dist/cubex-latest.$ext" ]]; then
+              cp "${files[0]}" "dist/cubex-latest.$ext"
+            fi
+          done
+
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            dist/* \
+          if [[ "$PRERELEASE" == "true" ]]; then
+            FLAGS=(--prerelease --latest=false)
+            NOTE="Prerelease. Commit $GITHUB_SHA is on: $BRANCHES"
+          else
+            FLAGS=(--latest)
+            NOTE="Stable release."
+          fi
+
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --verify-tag \
             --title "$GITHUB_REF_NAME" \
-            --generate-notes
+            --generate-notes \
+            --notes "$NOTE" \
+            "${FLAGS[@]}"
 
       - name: Remove signing keys
         if: always()
