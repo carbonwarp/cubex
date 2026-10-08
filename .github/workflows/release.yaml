@@ -84,15 +84,17 @@ jobs:
       - name: Add stable asset names
         if: env.PRERELEASE == 'false'
         run: |
+          shopt -s nullglob
           for ext in rpm deb pkg.tar.zst; do
+            latest="dist/cubex-latest.$ext"
+            [[ -e "$latest" ]] && continue
+
             files=(dist/*."$ext")
-            if [[ ${#files[@]} -ne 1 || ! -e "${files[0]}" ]]; then
+            if [[ ${#files[@]} -ne 1 ]]; then
               echo "Expected exactly one .$ext file in dist/, found: ${files[*]}"
               exit 1
             fi
-            if [[ "${files[0]}" != "dist/cubex-latest.$ext" ]]; then
-              cp "${files[0]}" "dist/cubex-latest.$ext"
-            fi
+            cp "${files[0]}" "$latest"
           done
 
       - name: Publish release
