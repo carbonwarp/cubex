@@ -25,3 +25,7 @@ For usability before a stable version, $HOME is binded and network is directly s
 Cubex is available as .rpm, .deb, and archlinux's pkg.tar.zst. The rpm is signed and can be verified while the .deb and archlinux are not, but it can also be trusted as its transmitted via https.
 
 Installation guide is available [here](https://carbonwarp.com/cubex#install)
+
+## Usage
+
+Usage with creating a subsystem and running firefox is available [here](https://carbonwarp.com/cubex/#how-to-use)
