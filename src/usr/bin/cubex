@@ -95,15 +95,22 @@ checkcmd() {
             ;;
 
         clean|cn)
+            if (( $# == 1 )); then
+                echo "Requires one more input. Either subsystem / all"
+                exit 2
+            fi
             case "${2-}" in
-                subsystem|s)
+                subsystem|ss)
                 	bash "$libdir/commands/subsystem/clean.sh"
                     ;;
-                *)
+                all|-a*)
                 	bash "$libdir/commands/clean.sh"
                     ;;
-
+                *)
+                    bash "$libdir/common/UNKNOWN_COMMAND.sh"
+                    ;;
             esac
+
             ;;
 
         list|l)
@@ -112,16 +119,10 @@ checkcmd() {
                    	 bash "$libdir/commands/registry/list.sh"
                     ;;
                 *)
-                    	bash "$libdir/commands/subsystem/list.sh"
+                    	bash "$libdir/commands/subsystem/list.sh" "${@:2:1}"
                     ;;
 
             esac
-            ;;
-
-        *)
-            echo "Error: unrecognized command \"${ci} ${*}\"" >&2
-            echo "Please refer cubex --help" >&2
-            return 127
             ;;
     esac
 }
