@@ -6,7 +6,7 @@
 
 # Cubex
 
-**Abstracion**
+Currently Working:
 
 - Subsystems - Systems that run on a (host) system parallel and simultaneously to host. Virtualization, containerization, and technologies similar to stated ones can be grouped into it.
 

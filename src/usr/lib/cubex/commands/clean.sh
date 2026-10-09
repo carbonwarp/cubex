@@ -1,9 +1,9 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 main(){
 	echo "WARNING: This will wipe all images and subsystems found in cubex registry"
-	
+
 	read -p "Press y to proceed. (y/n): " ans
 
 	if [[ "${ans,,}" == y || "${ans,,}" == yes ]]; then

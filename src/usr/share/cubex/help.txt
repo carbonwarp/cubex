@@ -1,25 +1,33 @@
-Cubex: The subsystem technology that integrates with system security
+Cubex — Subsystem technology that integrates with system security and
+makes configurations immutable at startup.
 
 Usage:
-  cx, cubex [options] [command]
+    cubex <command> [arguments]
 
-Available Commands:
-  search <url>				Search for an image using url (eg: docker.io/library/node)
-  pull <url> 				Pull an image and register it
-  create <image id> <subsystem name>	Create a cubex subsystem. 
-  					Requires passing image id followed by subsystem name.
-  					Same image id may be shared, but subsystem name must not.
-  r, run				Run / use a cubex subsystem
-  l, list				List all cubex subsystems
-  l r, ist registry			List all images from cubex local registry
-  rm, remove <subsystem id>		Remove a cubex subsystem (N/A)
-  rm i, remove image <image id>		Remove an image found in cubex local registry (N/A)
-  repair (pre-alpha)			repair if anything's wrong
-  cn, clean				clean all data cubex stored locally.
-  					It does not remove cubex itself.
-  					the images of podman and buildah stay unaffected.
-  
-Available Options:
-  -v, --version	Show cubex version
-  -h, --help	Show cubex help page
-  
+Image commands:
+    search, s <URL>                  Search for an image
+    pull, p <URL>                    Pull an image
+
+Subsystem commands:
+    create, c <image ID> <name>      Create a subsystem
+    start, st <name>                 Start a subsystem
+    stop, sp <name>                  Stop a subsystem
+    run, rn <name>                   Run a subsystem
+    list, l                          List running subsystems
+    list all, list -a                     List all subsystems
+    clean subsystem, clean ss        Clean subsystem data
+
+Registry commands:
+    list registry, l r               List registered images
+
+Data management:
+    clean all, clean -a              Clean all Cubex data
+
+General options:
+    help, -h, --help                 Show this help message
+    version, -v, --version            Show version information
+
+Workflow Order:
+    Search image -> Pull -> Create subsystem -> Start -> Run
+    You pass network config, paths bind, devices, displays, and others at
+    start so, you can always change it by stoping, starting, and running again
