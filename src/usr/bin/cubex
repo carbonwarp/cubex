@@ -6,7 +6,7 @@ set -eo pipefail
 
 
 # All variables except the throwaway has to be either written here or reference in comments
-var(){	
+var(){
 	export self="$(readlink -f "${BASH_SOURCE[0]}")"
 	export prefix="$(dirname "$(dirname "$self")")"
 	export libdir="$prefix"/lib/cubex
@@ -22,6 +22,8 @@ var(){
 	export subsystempath="$storage"/subsystem
 	export subsystemindex="$storage"/subsystem.json
 
+	export xrd="$XDG_RUNTIME_DIR"
+
 	# imageid and rootfspath are in pull.sh
 }
 
@@ -30,8 +32,8 @@ init() {
 	# clean tmp files
 	rm -f ${registryindex}.tmp.*
 	rm -f ${subsystemindex}.tmp.*
-	
-	
+
+
 	# Registry
 	mkdir -p "$registrypath"
 	if [[ ! -s "$registryindex" ]]; then
@@ -49,7 +51,7 @@ checkcmd() {
 	# if no input provided
 	if (( $# == 0 )); then
 		cat "$sharedir/help.txt"
-		exit 0 
+		exit 0
 	fi
 
     case "${!#}" in
@@ -80,7 +82,15 @@ checkcmd() {
             bash "$libdir/commands/subsystem/create.sh" "${@:2:2}"
             ;;
 
-        run|r)
+        start|st)
+            bash "$libdir"/commands/subsystem/start.sh "${@:2:1}"
+            ;;
+
+        stop|sp)
+            bash "$libdir"/commands/subsystem/stop.sh "${@:2:1}"
+            ;;
+
+        run|rn)
             bash "$libdir/commands/subsystem/run.sh" "${@:2:1}"
             ;;
 
@@ -102,7 +112,7 @@ checkcmd() {
                    	 bash "$libdir/commands/registry/list.sh"
                     ;;
                 *)
-                    	bash "$libdir/commands/subsystem/list.sh" 
+                    	bash "$libdir/commands/subsystem/list.sh"
                     ;;
 
             esac
