@@ -2,6 +2,8 @@
 
 ## Reporting a Vulnerability
 
+This software is beta and has many issues such as chroot escape, no limit, and others. It is planned to solve one by one as project evolves.
+
 Please report any security vulnerabilities or other critical security concerns to [support@carbonwarp.com](mailto:support@carbonwarp.com).
 
 To protect everyone and the wider ecosystem, please keep vulnerability details confidential until they can be investigated and addressed. Avoid public disclosure or sharing details with unauthorized parties that could put users at risk.
