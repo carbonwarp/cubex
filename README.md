@@ -20,7 +20,7 @@
 </details>
 
 
-Cubex works with any OCI-compliant image to create subsystems that integrate natively with the host system’s LSMs and integrates with host's security with flexible access controls that can provide access to the host path, the network with control over ports, both, or neither, depending on the needs.
+Cubex works with any OCI-compliant image to create subsystems that integrate natively with the host system’s LSMs. It uses a custom runtime, HANSA (Host Aware Namespace Assembler) to validate the idea that allows configurations to be made at start, not creation. It is specifically developed for places where mutating the host isn’t preferred. It offers flexible access controls that can provide access to the home directory, the network, both, or neither, depending on the needs.
 
 It is specifically developed for immutable Linux hosts, with flexible controls that can provide access to the host path, the network with control over ports, both, or neither, depending on the needs.
 
