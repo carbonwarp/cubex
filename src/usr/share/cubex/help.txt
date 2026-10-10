@@ -10,7 +10,8 @@ Image commands:
 
 Subsystem commands:
     create, c <image ID> <name>      Create a subsystem
-    start, st <name>                 Start a subsystem
+    start, st <name>                 Start an isolated subsystem
+    start, st <name> --optall, -oa   Start a fully integrated subsystem
     stop, sp <name>                  Stop a subsystem
     run, rn <name>                   Run a subsystem
     list, l                          List running subsystems
@@ -21,7 +22,8 @@ Registry commands:
     list registry, l r               List registered images
 
 Data management:
-    clean all, clean -a              Clean all Cubex data
+    clean all, clean -a              Remove all Cubex data
+    clean subsystem, clean -ss        Remove all subsystem
 
 General options:
     help, -h, --help                 Show this help message

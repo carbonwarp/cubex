@@ -1,3 +1,4 @@
 dist
 *.asc
 !public.asc
+idea
