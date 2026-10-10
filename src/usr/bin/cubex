@@ -100,10 +100,10 @@ checkcmd() {
                 exit 2
             fi
             case "${2-}" in
-                subsystem|ss)
+                subsystem|-ss)
                 	bash "$libdir/commands/subsystem/clean.sh"
                     ;;
-                all|-a*)
+                all|-a)
                 	bash "$libdir/commands/clean.sh"
                     ;;
                 *)

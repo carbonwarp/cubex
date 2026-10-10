@@ -51,4 +51,4 @@ update(){
 validate "$@"
 create "$@"
 update "$@"
-echo "Done. Try ${ci} run ${2}"
+echo "Done. Try ${ci} start ${2} (-oa)"

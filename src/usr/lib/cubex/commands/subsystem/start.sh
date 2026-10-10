@@ -92,7 +92,8 @@ DEFAULT(){
 
           exec chroot "$merged" /usr/bin/env /bin/sh
           ' sh "$lower" "$dir" </dev/null >"$dir/start.log" 2>&1 &
-        return 0
+          printf "Started\n"
+        exit 0
     fi
 }
 
