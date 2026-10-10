@@ -83,7 +83,7 @@ checkcmd() {
             ;;
 
         start|st)
-            bash "$libdir"/commands/subsystem/start.sh "${@:2:1}"
+            bash "$libdir"/commands/subsystem/start.sh "${@:2}"
             ;;
 
         stop|sp)
