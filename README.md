@@ -11,16 +11,7 @@
 ## Cubex Subsystem 
 ### The subsystem technology that integrates with  host's system security
 
-<details>
-    <summary>Abstraction</summary>
-
-- Subsystems - Systems that run on a (host) system parallel and simultaneously to host. Virtualization, containerization, and technologies similar to stated ones can be grouped into it.
-    
-- Security through Integration - Depending on the use-case, Integration offers security as much as or better than isolation by requiring the stated program to be governed by the same security model that restricts other programs on the system. It does not mean to not look after integrity. 
-</details>
-
-
-Cubex works with any OCI-compliant image to create subsystems that integrate natively with the host system’s LSMs. It uses a custom runtime, HANSA (Host Aware Namespace Assembler) to validate the idea that allows configurations to be made at start, not creation. It is specifically developed for places where mutating the host isn’t preferred. It offers flexible access controls that can provide access to the home directory, the network, both, or neither, depending on the needs.
+Unlike traditional container technologies, Cubex allows configurations to be made at start, not creation. 
 
 
 ## Installation & Usage
