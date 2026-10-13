@@ -4,7 +4,7 @@
 # Cubex
 
 
-Cubex allows configurations to be defined at startup rather than creation and runs rootless by default. This architecture prioritizes security and provides the flexibility to adapt configurations and access controls to different workloads without recreating the subsystem.
+A container creating and managing tool that allows configurations to be defined at startup rather than creation and runs rootless by default. This architecture prioritizes security and provides the flexibility to adapt configurations and access controls to different workloads without recreating. In this poc containers are called subsystem
 
 ## Installation & Usage
 
